@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['register', 'login']]);
-    }
     /**
      * Register a User.
      *
@@ -73,7 +69,9 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        $userId = auth()->getPayload()->get('sub');
+        $user = User::find($userId);
+        return response()->json($user);
     }
 
     /**
