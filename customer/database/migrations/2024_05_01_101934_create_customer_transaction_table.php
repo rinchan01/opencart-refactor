@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customer_transaction', function (Blueprint $table) {
-            $table->id('customer_transaction_id')->primary();
-            $table->id('customer_id')->nullable();
-            $table->id('order_id')->nullable();
+            $table->id('customer_transaction_id');
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
+            $table->unsignedBigInteger('order_id')->nullable();
             $table->text('description')->collation('utf8mb4_general_ci')->nullable();
             $table->decimal('amount', 15, 4)->nullable();
             $table->dateTime('date_added')->nullable();
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_transaction');
+        // Schema::dropIfExists('customer_transaction');
     }
 };

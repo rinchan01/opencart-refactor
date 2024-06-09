@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('image', 255)->collation('utf8mb4_unicode_ci')->nullable();
             $table->string('code', 40)->collation('utf8mb4_unicode_ci')->nullable();
             $table->string('ip', 40)->collation('utf8mb4_unicode_ci')->nullable();
+            $table->string('user_agent', 255)->collation('utf8mb4_unicode_ci')->nullable();
             $table->tinyInteger('status')->nullable();
             $table->dateTime('date_added')->nullable();
         });
@@ -40,7 +41,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
+        // Schema::dropIfExists('users');
+        // Schema::dropIfExists('password_reset_tokens');
     }
 };

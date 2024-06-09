@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customer_affiliate', function (Blueprint $table) {
-            $table->id('customer_id')->primary();
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
+            $table->primary('customer_id');
             $table->string('company', 60)->collation('utf8mb4_general_ci')->nullable();
             $table->string('website', 255)->collation('utf8mb4_general_ci')->nullable();
             $table->string('tracking', 64)->collation('utf8mb4_general_ci')->nullable();
@@ -31,11 +33,13 @@ return new class extends Migration
             $table->tinyInteger('status')->nullable();
             $table->dateTime('date_added')->nullable();
         });
-        
+
         Schema::create('customer_affiliate_report', function (Blueprint $table) {
-            $table->id('customer_affiliate_report_id')->primary();
-            $table->id('customer_id')->nullable();
-            $table->id('store_id')->nullable();
+            $table->id('customer_affiliate_report_id');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
+            $table->unsignedBigInteger('store_id')->nullable();
+            $table->foreign('store_id')->references('store_id')->on('store')->onDelete('cascade');
             $table->string('ip', 40)->collation('utf8mb4_general_ci')->nullable();
             $table->string('country', 2)->collation('utf8mb4_general_ci')->nullable();
             $table->dateTime('date_added')->nullable();
@@ -47,6 +51,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_affiliate');
+        // Schema::dropIfExists('customer_affiliate');
     }
 };

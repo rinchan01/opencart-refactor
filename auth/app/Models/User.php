@@ -11,13 +11,10 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
+
     public $timestamps = false;
     protected $primaryKey = 'user_id';
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = [
         'username',
         'firstname',
@@ -27,26 +24,16 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'image',
         'code',
-        'ip',
         'status',
         'date_added',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
-        // 'remember_token',
+        'ip',
+        'user_agent'
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [

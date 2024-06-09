@@ -3,82 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
+use App\Services\UserService;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function register()
-    {
-        $validator = Validator::make(request()->all(), [
-            'username' => 'required|max:20',
-            'firstname' => 'required|max:32',
-            'lastname' => 'required|max:32',
-            'email' => 'required|email|unique:users|max:96',
-            'password' => 'required|confirmed|min:8|max:255',
-            'user_group_id' => '',
-            'image' => ''
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = new User;
-        $user->email = request()->email;
-        $user->password = bcrypt(request()->password);
-        $user->firstname = request()->firstname;
-        $user->lastname = request()->lastname;
-        $user->username = request()->username;
-        $user->code = request()->code;
-        $user->image = request()->image;
-        $user->user_group_id = request()->user_group_id;
-        $user->ip = request()->ip();
-        $user->date_added = now();
-        $user->save();
-
-        return response()->json($user, 201);
+    protected $userService;
+    public function __construct(UserService $userService) {
+        $this->userService = $userService;
     }
-
+    public function register(Request $request)
+    {
+        $result = $this->userService->register($request->all());
+        $data = $result->getData(true); // Get data as an associative array
+        return response()->json($data, $result->status());
+    }
 
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
-    {
-        $credentials = request(['email', 'password']);
-
-        if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+    public function login(Request $request) {
+        $result = $this->userService->login($request->only(['email', 'password']));
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['status']);
         }
-
-        return $this->respondWithToken($token);
+        return response()->json($result['token'], $result['status']);
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function me()
     {
-        $userId = auth()->getPayload()->get('sub');
-        $user = User::find($userId);
+        $user = $this->userService->getAuthenticateUser();
         return response()->json($user);
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function logout()
     {
         auth()->logout();
@@ -86,6 +45,10 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
+    public function update(Request $request, $id)
+    {
+        return $this->userService->update($id, $request->all());
+    }
     /**
      * Refresh a token.
      *
@@ -93,22 +56,29 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        $token = $this->userService->refreshToken();
+
+        return response()->json($this->userService->respondWithToken($token));
     }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
+    protected function forgotPassword(Request $request)
     {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+        $request->validate(['email' => 'required|email']);
+
+        $this->userService->forgotPassword($request->email);
+
+        return response()->json(['message' => 'Reset password link sent on your email id.']);
+    }
+
+    protected function resetPassword(Request $request, $token)
+    {
+        $request->validate([
+            'password' => 'required|confirmed'
         ]);
+        $data = $request->all();
+        $data['token'] = $token;
+
+        $this->userService->resetPassword($data);
+        return response()->json(['message' => 'Password has been reset successfully.']);
     }
 }

@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customer_authorize', function (Blueprint $table) {
-            $table->id('customer_authorize_id')->primary();
-            $table->id('customer_id')->nullable();
+            $table->id('customer_authorize_id');
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
             $table->string('token', 96)->collation('utf8mb4_unicode_ci')->nullable();
             $table->integer('total')->nullable();
             $table->string('ip', 40)->collation('utf8mb4_unicode_ci')->nullable();
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_authorize');
+        // Schema::dropIfExists('customer_authorize');
     }
 };

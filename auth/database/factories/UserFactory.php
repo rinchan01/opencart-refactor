@@ -34,7 +34,6 @@ class UserFactory extends Factory
             'ip' => fake()->ipv4(),
             'status' => fake()->numberBetween(0, 1),
             'date_added' => fake()->dateTime(),
-            'remember_token' => Str::random(10),
         ];
     }
 
