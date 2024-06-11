@@ -47,6 +47,7 @@ class UserService
         return response()->json($user, 201);
     }
 
+
     public function update($id, $data)
     {
         $validator = Validator::make($data, [

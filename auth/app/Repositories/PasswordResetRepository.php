@@ -9,7 +9,7 @@ class PasswordResetRepository
 {
     public function createToken($email, $token)
     {
-        $expiry = Carbon::now()->addMinutes(60);
+        $expiry = Carbon::now()->addMinutes(20);
         return DB::table('password_reset_tokens')->insert([
             'email' => $email,
             'token' => $token,

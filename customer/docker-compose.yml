@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+    customer_db:
+        image: mysql:8.4
+        networks:
+            - phpmyadmin
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - "33061:3306"
+        volumes:
+            - mysql_data_customer:/var/lib/mysql
+    customer:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        networks:
+            - phpmyadmin
+        ports:
+            - "8001:8001"
+        environment:
+            DB_HOST: customer_db
+            DB_PORT: 3306
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+            MAIL_MAILER: ${MAIL_MAILER}
+            MAIL_HOST: host.docker.internal
+            MAIL_PORT: ${MAIL_PORT}
+            MAIL_USERNAME: ${MAIL_USERNAME}
+            MAIL_PASSWORD: ${MAIL_PASSWORD}
+            MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+            MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+            MAIL_FROM_NAME: "${APP_NAME}"
+        depends_on:
+            - customer_db
+        volumes:
+          - .:/app
+volumes:
+  mysql_data_customer:
+networks:
+  phpmyadmin:
+    external: true

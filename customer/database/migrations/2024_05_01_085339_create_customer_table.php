@@ -40,9 +40,9 @@ return new class extends Migration
             $table->foreign('customer_group_id')->references('customer_group_id')->on('customer_group')->onDelete('cascade');
             $table->unsignedBigInteger('language_id')->nullable();
             $table->foreign('language_id')->references('language_id')->on('language')->onDelete('cascade');
-            $table->string('firstname', 32)->collation('utf8mb4_unicode_ci')->nullable();
-            $table->string('lastname', 32)->collation('utf8mb4_unicode_ci')->nullable();
-            $table->string('email', 96)->collation('utf8mb4_unicode_ci')->nullable();
+            $table->string('firstname', 32)->collation('utf8mb4_unicode_ci');
+            $table->string('lastname', 32)->collation('utf8mb4_unicode_ci');
+            $table->string('email', 96)->collation('utf8mb4_unicode_ci');
             $table->string('telephone', 32)->collation('utf8mb4_unicode_ci')->nullable();
             $table->text('customer_field')->collation('utf8mb4_unicode_ci')->nullable();
             $table->string('password', 40)->collation('utf8mb4_unicode_ci')->nullable();
@@ -100,11 +100,11 @@ return new class extends Migration
         });
 
         Schema::create('customer_wishlist', function (Blueprint $table) {
-            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
-            $table->unsignedBigInteger('store_id')->nullable();
+            $table->unsignedBigInteger('store_id');
             $table->foreign('store_id')->references('store_id')->on('store')->onDelete('cascade');
-            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('product_id');
             $table->dateTime('date_added')->nullable();
             $table->primary(['customer_id', 'store_id', 'product_id']);
         });
@@ -119,5 +119,6 @@ return new class extends Migration
         Schema::dropIfExists('store');
         Schema::dropIfExists('customer_group');
         Schema::dropIfExists('customer');
+        Schema::dropIfExists('customer_wishlist');
     }
 };
