@@ -19,11 +19,11 @@ RUN apt-get update --fix-missing && apt-get install -y \
     && docker-php-ext-install sockets \
     && docker-php-source delete \
     && curl -sS https://getcomposer.org/installer | php -- \
-     --install-dir=/usr/local/bin --filename=composer
+    --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
 COPY . .
 RUN composer install
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
-EXPOSE 8000
+CMD php artisan serve --host=0.0.0.0 --port=8003
+EXPOSE 8003

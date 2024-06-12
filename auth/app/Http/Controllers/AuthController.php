@@ -81,4 +81,20 @@ class AuthController extends Controller
         $this->userService->resetPassword($data);
         return response()->json(['message' => 'Password has been reset successfully.']);
     }
+    protected function verifyToken(Request $request) {
+        try {
+            // extract the token
+            $authorizationHeader = $request->header('Authorization');
+            if (!$authorizationHeader) {
+                throw new \Exception('No authorization header provided');
+            }
+            $token = str_replace('Bearer ', '', $authorizationHeader);
+
+            $response = $this->userService->verifyToken($token);
+
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
 }

@@ -13,20 +13,20 @@ class CustomerRepositoryImpl implements CustomerRepository
         $customer->save();
         return Customer::all();
     }
-    public function update(array $data, int $id) {
-        $customer = Customer::find($id);
+    public function findByEmail($email)
+    {
+        return Customer::where('email', $email)->firstOrFail();
+    }
+    public function update(array $data, string $email) {
+        $customer = $this->findByEmail($email);
         if ($customer) {
             $customer->fill($data);
             $customer->save();
         }
         return Customer::all();
     }
-    public function find(int $id)
-    {
-        return Customer::where('id', $id)->firstOrFail();
-    }
-    public function delete(int $id) {
-        $customer = Customer::find($id);
+    public function delete($email) {
+        $customer = $this->findByEmail($email);
         if ($customer) {
             $customer->delete();
         }
@@ -35,5 +35,5 @@ class CustomerRepositoryImpl implements CustomerRepository
     public function all() {
         return Customer::all();
     }
-    
+
 }

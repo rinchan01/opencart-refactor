@@ -75,6 +75,9 @@ class UserService
 
     public function getAuthenticateUser()
     {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         return auth()->user();
     }
 
@@ -119,6 +122,18 @@ class UserService
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60 * 24 * 30
         ]);
+    }
+    public function verifyToken($token) {
+        try {
+            $user = auth()->setToken($token)->user();
+            if ($user) {
+                return $user;
+            } else {
+                throw new \Exception('Unauthorized');
+            }
+        } catch (\Exception $e) {
+            return ['error' => 'Unauthorized'];
+        }
     }
 
 

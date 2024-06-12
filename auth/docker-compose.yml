@@ -39,6 +39,12 @@ services:
           - .:/app
         networks:
             - phpmyadmin
+    gateway:
+        image: apt-gateway:v1
+        ports:
+            - "8003:8003"
+        networks:
+            - phpmyadmin
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         networks:

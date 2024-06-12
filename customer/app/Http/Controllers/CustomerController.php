@@ -52,7 +52,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        return response()->json($this->customerService->find($customer));
+        return response()->json($this->customerService->findByEmail($customer->email));
     }
 
     /**
