@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Events\UserCreated;
+use App\Jobs\CreateUserJob;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -9,10 +11,14 @@ use Illuminate\Support\Str;
 use App\Repositories\PasswordResetRepository;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PasswordResetMail;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class UserService
 {
-    // constructor injection
     protected $userRepository;
     protected $passwordResetRepository;
 
@@ -30,8 +36,9 @@ class UserService
             'lastname' => 'required|max:32',
             'email' => 'required|email|unique:users|max:96',
             'password' => 'required|confirmed|min:8|max:255',
+            'telephone' => 'digits:10',
             'user_group_id' => '',
-            'image' => ''
+            'image' => '',
         ]);
 
         if ($validator->fails()) {
@@ -42,8 +49,23 @@ class UserService
         if (!isset($data['user_group_id'])) {
             $data['user_group_id'] = 1;
         }
+        if (!isset($data['image'])) {
+            $data['image'] = '';
+        }
+        if (!isset($data['store_id'])) {
+            $data['store_id'] = 1;
+        }
+        $data['date_added'] = Carbon::now();
+
+        
+
         $data['password'] = Hash::make($data['password']);
+
         $user = $this->userRepository->save($data);
+
+        if ($user) {
+            CreateUserJob::dispatch($data);
+        }
         return response()->json($user, 201);
     }
 
@@ -54,7 +76,8 @@ class UserService
             'username' => 'max:20|unique:users',
             'firstname' => 'max:32',
             'lastname' => 'max:32',
-            'image' => ''
+            'image' => '',
+            'telephone' => ''
         ]);
 
         if ($validator->fails()) {
@@ -123,17 +146,19 @@ class UserService
             'expires_in' => auth()->factory()->getTTL() * 60 * 24 * 30
         ]);
     }
-    public function verifyToken($token) {
+    public function verifyToken() {
         try {
-            $user = auth()->setToken($token)->user();
-            if ($user) {
-                return $user;
-            } else {
-                throw new \Exception('Unauthorized');
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
             }
-        } catch (\Exception $e) {
-            return ['error' => 'Unauthorized'];
+        } catch (TokenExpiredException $e) {
+            return response()->json(['token_expired'], 401);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['token_invalid'], 401);
+        } catch (JWTException $e) {
+            return response()->json(['token_absent'], 400);
         }
+        return response()->json(compact('user'));
     }
 
 

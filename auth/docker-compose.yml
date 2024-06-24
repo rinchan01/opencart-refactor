@@ -10,7 +10,7 @@ services:
         ports:
             - "33060:3306"
         volumes:
-            - mysql_data:/var/lib/mysql
+            - auth_mysql_data:/var/lib/mysql
         networks:
             - phpmyadmin
     auth:
@@ -40,7 +40,7 @@ services:
         networks:
             - phpmyadmin
     gateway:
-        image: apt-gateway:v1
+        image: api-gateway:latest
         ports:
             - "8003:8003"
         networks:
@@ -50,14 +50,15 @@ services:
         networks:
             - phpmyadmin
         environment:
-            PMA_HOSTS: db, customer_db
+            PMA_HOSTS: db, customer_db, gateway_db
             PMA_PORT: 3306
         ports:
             - "8081:80"
         depends_on:
             - db
 volumes:
-  mysql_data:
+  auth_mysql_data:
+  rabbitmq_data:
 networks:
   phpmyadmin:
     driver: bridge

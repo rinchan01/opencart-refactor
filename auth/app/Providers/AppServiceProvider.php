@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Jobs\CreateUserJob;
+use App\Jobs\DeleteUserJob;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->bindMethod([CreateUserJob::class, 'handle'], function ($job) {
+            return $job->handle();
+        });
+
+        $this->app->bindMethod([DeleteUserJob::class, 'handle'], function ($job) {
+            return $job->handle();
+        });
     }
 }

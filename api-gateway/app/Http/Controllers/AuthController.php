@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -47,17 +49,18 @@ class AuthController extends Controller
 
         return response()->json(json_decode($response->getBody(), true), $response->getStatusCode());
     }
-    public function me(Request $request)
-    {
-        $client = new Client();
-        $response = $client->get(env('AUTH_SERVICE_URL') . '/api/auth/me', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $request->bearerToken()
-            ]
-        ]);
 
-        return response()->json(json_decode($response->getBody(), true), $response->getStatusCode());
-    }
+    // public function validateToken(Request $request)
+    // {
+    //     $client = new Client();
+    //     $response = $client->get(env('AUTH_SERVICE_URL') . '/api/verify-token', [
+    //         'headers' => [
+    //             'Authorization' => 'Bearer ' . $request->bearerToken()
+    //         ]
+    //     ]);
+    //     return response()->json(json_decode($response->getBody(), true), $response->getStatusCode());
+    // }
+
     public function update(Request $request, $id)
     {
         $client = new Client();

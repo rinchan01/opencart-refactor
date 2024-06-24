@@ -2,16 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Default Queue Connection Name
-    |--------------------------------------------------------------------------
-    |
-    | Laravel's queue supports a variety of backends via a single, unified
-    | API, giving you convenient access to each backend using identical
-    | syntax for each. The default queue connection is defined below.
-    |
-    */
 
     'default' => env('QUEUE_CONNECTION', 'database'),
 
@@ -71,7 +61,50 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
-
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'worker' => env('RABBITMQ_WORKER', 'default'),
+            'dsn' => env('RABBITMQ_DSN', null),
+            // 'factory_class' => \Enqueue\AmqpBunny\AmqpConnectionFactory::class,
+            'host' => env('RABBITMQ_HOST', '127.0.0.1'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
+            'user' => env('RABBITMQ_USER', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            // 'options' => [
+            //     'exchange' => [
+            //         'name' => env('RABBITMQ_EXCHANGE_NAME'),
+            //         'declare' => env('RABBITMQ_EXCHANGE_DECLARE', true),
+            //         /*
+            //         * Read more about possible values at https://www.rabbitmq.com/tutorials/amqp-concepts.html
+            //         */
+            //         'type' => env('RABBITMQ_EXCHANGE_TYPE', \Interop\Amqp\AmqpTopic::TYPE_DIRECT),
+            //         'passive' => env('RABBITMQ_EXCHANGE_PASSIVE', false),
+            //         'durable' => env('RABBITMQ_EXCHANGE_DURABLE', true),
+            //         'auto_delete' => env('RABBITMQ_EXCHANGE_AUTODELETE', false),
+            //         'arguments' => env('RABBITMQ_EXCHANGE_ARGUMENTS'),
+            //     ],
+            //     'queue' => [
+            //         'declare' => env('RABBITMQ_QUEUE_DECLARE', true),
+            //         'bind' => env('RABBITMQ_QUEUE_DECLARE_BIND', true),
+            //         'passive' => env('RABBITMQ_QUEUE_PASSIVE', false),
+            //         'durable' => env('RABBITMQ_QUEUE_DURABLE', true),
+            //         'exclusive' => env('RABBITMQ_QUEUE_EXCLUSIVE', false),
+            //         'auto_delete' => env('RABBITMQ_QUEUE_AUTODELETE', false),
+            //         'arguments' => env('RABBITMQ_QUEUE_ARGUMENTS'),
+            //     ],
+            // ],
+            // 'sleep_on_error' => env('RABBITMQ_ERROR_SLEEP', 5),
+            // 'ssl_params' => [
+            //     'ssl_on' => env('RABBITMQ_SSL', false),
+            //     'cafile' => env('RABBITMQ_SSL_CAFILE', null),
+            //     'local_cert' => env('RABBITMQ_SSL_LOCALCERT', null),
+            //     'local_key' => env('RABBITMQ_SSL_LOCALKEY', null),
+            //     'verify_peer' => env('RABBITMQ_SSL_VERIFY_PEER', true),
+            //     'passphrase' => env('RABBITMQ_SSL_PASSPHRASE', null),
+            // ],
+        ],
     ],
 
     /*

@@ -34,7 +34,6 @@ class CustomerController extends Controller
             'email' => 'required|email',
             'telephone' => 'required|string|min:10|max:32',
             'password' => 'required|string|min:6|max:20',
-            'confirm_password' => 'required|string|min:6|max:20',
             'newsletter' => 'integer',
             'status' => 'integer',
             'approved' => 'integer',
@@ -43,6 +42,7 @@ class CustomerController extends Controller
             'code' => 'string',
             'date_added' => 'date',
         ]);
+
         $customer = $this->customerService->save($validatedData);
         return response()->json($customer);
     }

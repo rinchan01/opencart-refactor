@@ -14,8 +14,10 @@ class AuthController extends Controller
     }
     public function register(Request $request)
     {
+        $request['ip'] = $request->ip();
+        $request['user_agent'] = $request->userAgent();
         $result = $this->userService->register($request->all());
-        $data = $result->getData(true); // Get data as an associative array
+        $data = $result->getData(true);
         return response()->json($data, $result->status());
     }
 
@@ -82,19 +84,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password has been reset successfully.']);
     }
     protected function verifyToken(Request $request) {
-        try {
-            // extract the token
-            $authorizationHeader = $request->header('Authorization');
-            if (!$authorizationHeader) {
-                throw new \Exception('No authorization header provided');
-            }
-            $token = str_replace('Bearer ', '', $authorizationHeader);
-
-            $response = $this->userService->verifyToken($token);
-
-            return response()->json($response, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // return response()->json(['valid' => auth()->check()]);
+        return $this->userService->verifyToken();
     }
 }

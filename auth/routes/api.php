@@ -9,7 +9,6 @@ Route::group([
 ], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::get('verify-token', [AuthController::class, 'verifyToken']);
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
@@ -18,5 +17,6 @@ Route::group([
 
     });
 });
+Route::get('verify-token', [AuthController::class, 'verifyToken']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('password/reset/{token}', [AuthController::class, 'resetPassword']);
